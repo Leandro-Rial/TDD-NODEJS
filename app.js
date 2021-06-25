@@ -1,16 +1,23 @@
 const express = require('express');
-const app = express();
 
-app.use(express.json())
 
-app.post('/users', (req, res) => {
-    const { password, username } = req.body;
+module.exports = function (database) {
+    
+    const app = express();
+    
+    app.use(express.json())
+    
+    app.post('/users', async (req, res) => {
+        const { password, username } = req.body;
+    
+        if(!password || !username) {
+            return res.sendStatus(400)
+        }
 
-    if(!password || !username) {
-        return res.sendStatus(400)
-    }
+        const userId = await database.createUser(username, password)
+    
+        res.send({ userId })
+    })
 
-    res.send({userId: 0})
-})
-
-module.exports = app
+    return app
+}
